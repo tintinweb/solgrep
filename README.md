@@ -285,7 +285,7 @@ sg.analyzeDir("/path/to/smart/contracts").then(() => {
     console.log("   ──────────────────────────── Results")
     console.log(sg.results)
     console.log("   ────────────────────────────")
-    vdb.close();
+    sgrep.close();
 })
 
 
