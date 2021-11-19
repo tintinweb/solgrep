@@ -9,6 +9,11 @@ const fs = require('fs');
 const path = require('path');
 const parser = require('@solidity-parser/parser');
 
+const prxAttribForwarder = {
+    get: function(target, prop, receiver) {
+        return target[prop] === undefined ? target.ast[prop] : target[prop];
+    }
+}
 
 class SourceUnit {
     constructor() {
@@ -18,6 +23,10 @@ class SourceUnit {
         this.contracts = {};
         this.pragmas = [];
         this.imports = [];
+    }
+
+    getSource(){
+        return this.content;
     }
 
     static getFileContent(fpath) {
@@ -65,7 +74,7 @@ class SourceUnit {
             PragmaDirective(node) { this_sourceUnit.pragmas.push(node); },
             ImportDirective(node) { this_sourceUnit.imports.push(node); },
             ContractDefinition(node) {
-                this_sourceUnit.contracts[node.name] = new Contract(this_sourceUnit, node);
+                this_sourceUnit.contracts[node.name] = new Proxy(new Contract(this_sourceUnit, node), prxAttribForwarder);
             },
         });
         /*** also import dependencies? */
@@ -166,7 +175,7 @@ class Contract {
 
             },
             FunctionDefinition(_node) {
-                let newFunc = new FunctionDef(current_contract, _node);
+                let newFunc = new Proxy(new FunctionDef(current_contract, _node), prxAttribForwarder);
                 current_contract.functions.push(newFunc);
                 current_contract.names[_node.name] = newFunc;
 

@@ -20,7 +20,7 @@ class IsInitializable extends BaseRule{
     check(sourceUnit){
         Object.values(sourceUnit.contracts).forEach(contract => {
             //for every contract in the SU
-            const found = contract.functions.filter(f => f.name === "initialize" && f._node.body !== null && (f._node.visibility === "public" || f._node.visibility === "external") && !f._node.modifiers.some(m => m.name === "onlyOwner"));
+            const found = contract.functions.filter(f => f.name === "initialize" && f.ast.body !== null && (f.ast.visibility === "public" || f.ast.visibility === "external") && !f.ast.modifiers.some(m => m.name === "onlyOwner"));
             
             if(found.length == 0){
                 return;
@@ -50,7 +50,7 @@ class IsMultipleBalanceOfSameFunc extends BaseRule{
         Object.values(sourceUnit.contracts).forEach(contract => {
             //for every contract in the SU
             contract.functions.forEach(f => {
-                if(f._node.modifiers.includes("nonReentrant")) return; //ignore nonReentrant
+                if(f.ast.modifiers.includes("nonReentrant")) return; //ignore nonReentrant
                 const funcbody = f.getSource();
                 if( (funcbody.split('.balanceOf').length -1 >= 2) && funcbody.split('diff').length -1 >= 2){
                     this.solgrep.report(sourceUnit, this, "DBL_BALANCEOF", `${f.name} - balanceOf() called multiple times within same func`);
@@ -169,7 +169,7 @@ class Stats extends BaseRule {
     check(sourceUnit){  
         this.stats.sourceUnits += 1;
         Object.values(sourceUnit.contracts).forEach(contract => {
-            switch(contract._node.kind){
+            switch(contract.ast.kind){
                 case "contract": 
                     this.stats.contracts.total += 1;  //num contracts
                     this.stats.contracts.names[contract.name] = this.stats.contracts.names[contract.name] === undefined ? 1 : this.stats.contracts.names[contract.name] + 1; //num contracts with same name
@@ -187,7 +187,7 @@ class Stats extends BaseRule {
                     this.stats.abstract.names[contract.name] = this.stats.abstract.names[contract.name] === undefined ? 1 : this.stats.abstract.names[contract.name] + 1; //num contracts with same name
                     break;
                 default:
-                    throw new Error(`Unknown contract kind: ${contract._node.kind}`);
+                    throw new Error(`Unknown contract kind: ${contract.ast.kind}`);
             }
         });
     }

@@ -108,19 +108,21 @@ for(let path of argv._){
 
 
     let vdb = new SolGrep('::memory::', rules, callbacks);
-    vdb.analyzeDir(path);
+    vdb.analyzeDir(path).then(() => {
+        console.log("   ──────────────────────────── Results")
+        console.log(vdb.results)
+        console.log("   ────────────────────────────")
 
-    console.log("   ──────────────────────────── Results")
-    console.log(vdb.results)
-    console.log("   ────────────────────────────")
+        if(argv.output){
+            require('fs').writeFileSync(argv.output, JSON.stringify(vdb.results, null, 2));
+        }
 
-    if(argv.output){
-        require('fs').writeFileSync(argv.output, JSON.stringify(vdb.results, null, 2));
-    }
+        vdb.close();
+        console.log("   ────────────────────────────")
+        bar1.stop();
+        exitProcess(vdb.results.length);
+    })
 
-    vdb.close();
-    console.log("   ────────────────────────────")
-    bar1.stop();
+    
 }
 
-exitProcess(0);

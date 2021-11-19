@@ -39,7 +39,7 @@ class SolGrep {
 
     report(sourceUnit, rule, tag, info){
         this.callbacks.onReport && this.callbacks.onReport(sourceUnit, rule, tag, info);
-        let key = sourceUnit ? sourceUnit.filePath : undefined
+        let key = sourceUnit ? sourceUnit.filePath : "__general__"
         let result = this.results[key] === undefined ? this.results[key] = [] : this.results[key];
         result.push({rule:rule.constructor.name, tag:tag, info:info})
     }
