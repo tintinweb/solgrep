@@ -24,25 +24,25 @@ Probably the most common way to use this tool is to run it with the `--find=<js-
 
 ### Examples
 
-👉 You want to find all source-units with a contract that has a function named `withdrawEth`? As is as this 
+You want to find all source-units with a contract that has a function named `withdrawEth`? 👉 
 
 ```javascript
 ⇒  solgrep smart-contract-sanctuary/contracts_arbiscan/mainnet/ --find="function.name=='withdrawEth'" 
 ```
 
-👉 Do the same thing but case-insensitive?
+Do the same thing but case-insensitive? 👉 
 
 ```javascript
 ⇒  solgrep smart-contract-sanctuary/contracts_arbiscan/mainnet/ --find="function.name.toLowerCase()=='withdraweth'" 
 ```
 
-👉 Exctract all function names from all contracts?
+Exctract all function names from all contracts? 👉 
 
 ```javascript
 ⇒  solgrep smart-contract-sanctuary/contracts_arbiscan/mainnet/ --find="function.name" 
 ```
 
-👉 Get a list of all `external` functions?
+Get a list of all `external` functions? 👉 
 
 ```javascript
 ⇒  solgrep smart-contract-sanctuary/contracts_arbiscan/mainnet/ --find="function.visibility.includes('external')"  
