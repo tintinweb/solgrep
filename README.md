@@ -281,9 +281,9 @@ Options:
 const solgrep = require('solgrep');
 
 let sg = new SolGrep('::memory::', rules, callbacks);
-sg.analyzeDir(path).then(() => {
+sg.analyzeDir("/path/to/smart/contracts").then(() => {
     console.log("   ──────────────────────────── Results")
-    console.log(vdb.results)
+    console.log(sg.results)
     console.log("   ────────────────────────────")
     vdb.close();
 })
