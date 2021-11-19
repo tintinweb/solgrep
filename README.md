@@ -19,6 +19,9 @@ Solgrep recursively finds smart contracts in a target directory, parses the sour
 
 Probably the most common way to use this tool is to run it with the `--find=<js-filter-statement>` option, where `js-filter-statement` is a javascript one-liner that tells the engine what you are interested in.
 
+![solgrep](https://user-images.githubusercontent.com/2865694/142671551-dc3dae4d-1d37-4d8d-8b35-b88660591db4.gif)
+
+
 ### Examples
 
 You want to find all source-units with a contract that has a function named `withdrawEth`? As is as this 👉
