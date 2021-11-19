@@ -12,12 +12,12 @@ So you have a set of smart contracts and want to find all contracts that have a 
 
 Solgrep recursively finds smart contracts in a target directory, parses the source units to understand the language semantics, and makes this information available to a powerful javascript-based filter function. This way, you can:
 
-* extract any information based on custom filter functions
-* find target contracts/source-units based on custom filter functions
-* create & run your own or built-in rules
-* gather scanner statistics
+* extract semantic information from solidity source code based on custom filter functions
+* find target contracts based on a custom filter script you define
+* create & run your own or built-in rules (e.g. for CI checks)
+* crunch numbers and generate statistics from a code base
 
-Probably the most common way to use this tool is to run it with the `--find=<js-filter-statement>` option, where `js-filter-statement` is a javascript one-liner that tells the engine what you are interested in.
+Probably the most common way to use this tool is to run it with the `--find=<js-filter-statement>` option, where `js-filter-statement` is a javascript one-liner that tells the engine what you are interested in. You either provide a statement that returns `boolean` ("find mode") or return information you want to extract ("extract mode").
 
 ![solgrep](https://user-images.githubusercontent.com/2865694/142671551-dc3dae4d-1d37-4d8d-8b35-b88660591db4.gif)
 
