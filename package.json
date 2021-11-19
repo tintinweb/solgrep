@@ -1,0 +1,32 @@
+{
+  "name": "solgrep",
+  "version": "0.0.1",
+  "description": "",
+  "main": "src/index.js",
+  "bin": {
+    "solgrep": "bin/main.js"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": {
+    "name": "tintinweb",
+    "url": "https://github.com/tintinweb/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tintinweb/solgrep.git"
+  },
+  "keywords": [
+    "solidity",
+    "grep"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "@solidity-parser/parser": "^0.14.0",
+    "chalk": "^4.1.2",
+    "cli-progress": "^3.9.1",
+    "safe-eval": "^0.4.1",
+    "yargs": "^17.2.1"
+  }
+}
