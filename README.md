@@ -24,31 +24,31 @@ Probably the most common way to use this tool is to run it with the `--find=<js-
 
 ### Examples
 
-You want to find all source-units with a contract that has a function named `withdrawEth`? As is as this 👉
+👉 You want to find all source-units with a contract that has a function named `withdrawEth`? As is as this 
 
 ```javascript
 ⇒  solgrep smart-contract-sanctuary/contracts_arbiscan/mainnet/ --find="function.name=='withdrawEth'" 
 ```
 
-Do the same thing but case-insensitive? 👉
+👉 Do the same thing but case-insensitive?
 
 ```javascript
 ⇒  solgrep smart-contract-sanctuary/contracts_arbiscan/mainnet/ --find="function.name.toLowerCase()=='withdraweth'" 
 ```
 
-Exctract all function names from all contracts? 👉
+👉 Exctract all function names from all contracts?
 
 ```javascript
 ⇒  solgrep smart-contract-sanctuary/contracts_arbiscan/mainnet/ --find="function.name" 
 ```
 
-Get a list of all `external` functions? 👉
+👉 Get a list of all `external` functions?
 
 ```javascript
-⇒  solgrep smart-contract-sanctuary/contracts_arbiscan/mainnet/ --find="function.ast.visibility.includes('external')"  
+⇒  solgrep smart-contract-sanctuary/contracts_arbiscan/mainnet/ --find="function.visibility.includes('external')"  
 ```
 
-Use option `--output=<output.json>` to write all results to file.
+Use option `--output=<output.json>` to write all results to a file.
 
 ### Built-In Keywords for `--find`
 
@@ -273,3 +273,20 @@ Options:
   -v, --version     Show version number                                [boolean]
 
   ```
+
+
+## Library 
+
+```javascript
+const solgrep = require('solgrep');
+
+let sg = new SolGrep('::memory::', rules, callbacks);
+sg.analyzeDir(path).then(() => {
+    console.log("   ──────────────────────────── Results")
+    console.log(vdb.results)
+    console.log("   ────────────────────────────")
+    vdb.close();
+})
+
+
+```
