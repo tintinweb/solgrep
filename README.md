@@ -171,25 +171,28 @@ Here's an example that illustrates how to extract all function names from all `s
 
 
 ```javascript
-⇒  solgrep smart-contract-sanctuary/contracts_arbiscan/mainnet/d6 --find="function.name" 
-🧠 SolGrep v0.0.1 starting ...
+⇒  solgrep ../d0  --find='function.name' 
+🧠 SolGrep v0.0.3 ready!
 
+  Enabled Modules:
+    ✔️ GenericGrep          _function.name
 
-  📁 smart-contract-sanctuary/contracts_arbiscan/mainnet/d6
- ████████████████████████████████████████ 100% | ETA: 0s | 5/5
- [🔥] smart-contract-sanctuary/contracts_arbiscan/mainnet/d6/d68970e266ce1a015953897c7055a5e0bc657af8_Vyper_contract.sol: The specified node does not exist
-   ──────────────────────────── Results
+[████████████████████████████████████████] 100% | 🕙 ETA: 0s | 5/5 | 🌲 389 | 🔥 0 | 🗂️  ../d0
+
+   ────────────────────────────
 {
-  'smart-contract-sanctuary/contracts_arbiscan/mainnet/d6/d60514536195573ce4a4a78ce5706e94e9ee7917_StrategySushiEthMimLp.sol': [
+  '../d0/D0788Af7a613b81F437a51b96594A6387c7329b1_PendleLiquidityMiningBaseV2Multi.sol': [
     {
       rule: 'GenericGrep',
-      tag: 'match-function: SafeMath.add',
-      info: 'add'
+      tag: 'match-function: PendleLiquidityMiningBaseV2Multi.__constructor__',
+      info: '__constructor__',
+      loc: [Object]
     },
     {
       rule: 'GenericGrep',
-      tag: 'match-function: SafeMath.sub',
-      info: 'sub'
+      tag: 'match-function: PendleLiquidityMiningBaseV2Multi.setUpEmergencyMode',
+      info: 'setUpEmergencyMode',
+      loc: [Object]
     },
 ...
 ```
@@ -200,16 +203,16 @@ If you provide no configuration options it will take the default built-in grep r
 
 
 ```javascript
-⇒  solgrep smart-contract-sanctuary/contracts_arbiscan/mainnet/d6 
+⇒  solgrep ../d6 
 🧠 SolGrep v0.0.1 starting ...
 
 
-  📁 smart-contract-sanctuary/contracts_arbiscan/mainnet/d6
+  📁 ../d6
  ████████████████████████████████████████ 100% | ETA: 0s | 5/5
 
    ──────────────────────────── Results
 {
-  'smart-contract-sanctuary/contracts_arbiscan/mainnet/d6/d60a598998ed27a7C54315F2675908B628E434B1_LiquidityPool.sol': [
+  '../d6/d60a598998ed27a7C54315F2675908B628E434B1_LiquidityPool.sol': [
     {
       rule: 'IsInitializable',
       tag: 'INITIALIZEABLE',
@@ -221,7 +224,7 @@ If you provide no configuration options it will take the default built-in grep r
       info: 'initialize - public initialize function; likely proxy'
     }
   ],
-  'smart-contract-sanctuary/contracts_arbiscan/mainnet/d6/d64E77C7C6A1dcC7e302F8fe31A22745e223c39c_MyStrategy.sol': [
+  '../d6/d64E77C7C6A1dcC7e302F8fe31A22745e223c39c_MyStrategy.sol': [
     {
       rule: 'IsInitializable',
       tag: 'INITIALIZEABLE',

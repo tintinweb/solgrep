@@ -26,6 +26,12 @@ const argv = require('yargs') // eslint-disable-line
         type: 'boolean',
         describe: 'List available rules',
     })
+    .option('s', {
+        alias: 'silent',
+        default: false,
+        type: 'boolean',
+        describe: 'Hide errors',
+    })
     .option('f', {
         alias: 'find',
         default: [],
@@ -46,7 +52,7 @@ const argv = require('yargs') // eslint-disable-line
         .alias('v', 'version')
     .argv;
 
-var selectedRules = [];
+var selectedModules = [];
 const banner = `🧠 ${chalk.bold("SolGrep")} v${require('../package.json').version} ready!
 `;
 const byebyeBanner = `
@@ -83,7 +89,7 @@ async function analyzeDir(sgrep, path){
         }
     }
 
-    var sgrep = new SolGrep('::memory::', selectedRules, callbacks);
+    var sgrep = new SolGrep('::memory::', selectedModules, callbacks);
 
     console.log(`\n  📁 ${path}`)
 
@@ -103,18 +109,26 @@ function main(){
     }
 
     if(argv.find.length){
-        selectedRules.push(new rules.GenericGrep(undefined, argv.find));
+        selectedModules.push(new rules.GenericGrep(undefined, argv.find));
     }
 
     argv.rule.forEach(r => {
         let tmpRule = rules[r];
         if(tmpRule){
-            selectedRules.push(new tmpRule(undefined));
+            selectedModules.push(new tmpRule(undefined));
         } else {
             console.error(` [🔥] Invalid ruleset: ${r}`)
             process.exit(1)
         }
     });
+
+    if(selectedModules.length){
+        console.log("  Enabled Modules:")
+        selectedModules.forEach(r => {
+            console.log(`    ✔️ ${r.constructor.name.padEnd(20)} ${r.constructor.name=="GenericGrep" ? r.patterns : ''}`)
+        })
+        console.log("")
+    }  
 
     /* ProgressBar */
     const progressBar =  new cliProgress.SingleBar({
@@ -129,6 +143,7 @@ function main(){
             progressBar.increment(1, {findings:sgrep.totalFindings, errors:sgrep.errors.length});
         },
         onFileError: (file, err) => {
+            if(argv.silent) return;
             console.error(`\n [🔥] ${file}: ${err}`)
         },
         onDirAnalyzed: (targetDir) => {
@@ -136,7 +151,7 @@ function main(){
         }
     }
 
-    const sgrep = new SolGrep('::memory::', selectedRules, callbacks);
+    const sgrep = new SolGrep('::memory::', selectedModules, callbacks);
     let promises = [];
 
     for(let dir of argv._){

@@ -250,9 +250,8 @@ class FunctionDef {
                             }
                     }
                     if (opts.findOne && found.length) {
-                        throw new FindOneExit()
+                        throw new FindOneExit(); // abort parser
                     }
-
                 }
             });
 
