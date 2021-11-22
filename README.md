@@ -6,49 +6,49 @@
 
 ## SolGrep - A scriptable semantic grep for solidity
 
-So you have a set of smart contracts and want to find all contracts that have a `public` method named `withdrawEth` but lexical grep yields a lot of false-positives? Here's where `solgrep` can help! 🙌
+So you have a set of smart contracts and want to find all contracts that have a `public` method named `withdrawEth` but lexical grep yields a lot of false-positives? Here's where [solgrep](https://github.com/tintinweb/solgrep) can help! 🙌
 
 [💾](https://www.npmjs.com/package/solgrep) `npm install solgrep` 
 
 Solgrep recursively finds smart contracts in a target directory, parses the source units to understand the language semantics, and makes this information available to a powerful javascript-based filter function. This way, you can:
 
-* extract any information based on custom filter functions
-* find target contracts/source-units based on custom filter functions
-* create & run your own or built-in rules
-* gather scanner statistics
+* extract semantic information from solidity source code based on custom filter functions
+* find target contracts based on a custom filter script you define
+* create & run your own or built-in rules (e.g. for CI checks)
+* crunch numbers and generate statistics from a code base
 
-Probably the most common way to use this tool is to run it with the `--find=<js-filter-statement>` option, where `js-filter-statement` is a javascript one-liner that tells the engine what you are interested in.
+Probably the most common way to use this tool is to run it with the `--find=<js-filter-statement>` option, where `js-filter-statement` is a javascript one-liner that tells the engine what you are interested in. You either provide a statement that returns `boolean` ("find mode") or return information you want to extract ("extract mode").
 
 ![solgrep](https://user-images.githubusercontent.com/2865694/142671551-dc3dae4d-1d37-4d8d-8b35-b88660591db4.gif)
 
 
 ### Examples
 
-You want to find all source-units with a contract that has a function named `withdrawEth`? As is as this 👉
+You want to find all source-units with a contract that has a function named `withdrawEth`? 👉 
 
 ```javascript
 ⇒  solgrep smart-contract-sanctuary/contracts_arbiscan/mainnet/ --find="function.name=='withdrawEth'" 
 ```
 
-Do the same thing but case-insensitive? 👉
+Do the same thing but case-insensitive? 👉 
 
 ```javascript
 ⇒  solgrep smart-contract-sanctuary/contracts_arbiscan/mainnet/ --find="function.name.toLowerCase()=='withdraweth'" 
 ```
 
-Exctract all function names from all contracts? 👉
+Exctract all function names from all contracts? 👉 
 
 ```javascript
 ⇒  solgrep smart-contract-sanctuary/contracts_arbiscan/mainnet/ --find="function.name" 
 ```
 
-Get a list of all `external` functions? 👉
+Get a list of all `external` functions? 👉 
 
 ```javascript
-⇒  solgrep smart-contract-sanctuary/contracts_arbiscan/mainnet/ --find="function.ast.visibility.includes('external')"  
+⇒  solgrep smart-contract-sanctuary/contracts_arbiscan/mainnet/ --find="function.visibility.includes('external')"  
 ```
 
-Use option `--output=<output.json>` to write all results to file.
+Use option `--output=<output.json>` to write all results to a file.
 
 ### Built-In Keywords for `--find`
 
@@ -273,3 +273,20 @@ Options:
   -v, --version     Show version number                                [boolean]
 
   ```
+
+
+## Library 
+
+```javascript
+const solgrep = require('solgrep');
+
+let sg = new SolGrep('::memory::', rules, callbacks);
+sg.analyzeDir("/path/to/smart/contracts").then(() => {
+    console.log("   ──────────────────────────── Results")
+    console.log(sg.results)
+    console.log("   ────────────────────────────")
+    sgrep.close();
+})
+
+
+```
