@@ -9,8 +9,11 @@ const fs = require('fs');
 const path = require('path');
 const parser = require('@solidity-parser/parser');
 
+
+class FindOneExit extends Error {}
+
 const prxAttribForwarder = {
-    get: function(target, prop, receiver) {
+    get: function (target, prop, receiver) {
         return target[prop] === undefined ? target.ast[prop] : target[prop];
     }
 }
@@ -25,7 +28,7 @@ class SourceUnit {
         this.imports = [];
     }
 
-    getSource(){
+    getSource() {
         return this.content;
     }
 
@@ -38,7 +41,7 @@ class SourceUnit {
         return { filePath, content };
     }
 
-    toJSON(){
+    toJSON() {
         return this.ast;
     }
 
@@ -63,7 +66,7 @@ class SourceUnit {
         this.ast = parser.parse(input, { loc: true, tolerant: true });
 
         if (typeof this.ast === "undefined") {
-            throw new ParserError("Parser failed to parse file.");
+            throw new parser.ParserError("Parser failed to parse file.");
         }
 
         /** AST rdy */
@@ -88,7 +91,7 @@ class Contract {
         this.ast = node;
         this.name = node.name;
         this.dependencies = node.baseContracts.map(spec => spec.baseName.namePath);
-    
+
         this.stateVars = {};  // pure statevars --> see names
         this.enums = {};  // enum declarations
         this.structs = {}; // struct declarations
@@ -96,6 +99,8 @@ class Contract {
         this.modifiers = {};  // modifier declarations
         this.functions = [];  // function and method declarations; can be overloaded
         this.constructor = null;  // ...
+        this.fallback = null;  // ...
+        this.receiveEther = null; // ...
         this.events = [];  // event declarations; can be overloaded
         this.inherited_names = {};  // all names inherited from other contracts
         this.names = {};   // all names in current contract (methods, events, structs, ...)
@@ -106,12 +111,12 @@ class Contract {
         this._processAst(node);
     }
 
-    toJSON(){
+    toJSON() {
         return this.ast;
     }
 
     getSource() {
-        return this.sourceUnit.content.split("\n").slice(this.ast.loc.start.line-1, this.ast.loc.end.line).join("\n");
+        return this.sourceUnit.content.split("\n").slice(this.ast.loc.start.line - 1, this.ast.loc.end.line).join("\n");
     }
 
     _processAst(node) {
@@ -178,20 +183,9 @@ class Contract {
                 let newFunc = new Proxy(new FunctionDef(current_contract, _node), prxAttribForwarder);
                 current_contract.functions.push(newFunc);
                 current_contract.names[_node.name] = newFunc;
-
-                if(_node.isConstructor){
-                    current_contract.constructor = newFunc;
-                    newFunc.name = "__constructor__"
-                } else if(_node.isFallback){
-                    current_contract.constructor = newFunc;
-                    newFunc.name = "__fallback__"
-                } else if(_node.isReceiveEther) {
-                    current_contract.constructor = newFunc;
-                    newFunc.name = "__receiveEther__"
-                } 
             },
 
-            FunctionCall(__node) { 
+            FunctionCall(__node) {
                 current_contract.functionCalls.push(__node);
             },
         });
@@ -202,27 +196,74 @@ class FunctionDef {
     constructor(contract, node) {
         this.contract = contract;
         this.ast = node;
-        this.name = node.name;
+
+        if (this.ast.isConstructor) {
+            contract.constructor = this;
+            this.name = "__constructor__"
+        } else if (this.ast.isFallback) {
+            contract.fallback = this;
+            this.name = "__fallback__"
+        } else if (this.ast.isReceiveEther) {
+            contract.receiveEther = this;
+            this.name = "__receiveEther__"
+        } else {
+            this.name = node.name;
+        }
+
+        if (this.ast.isConstructor || !this.ast.modifiers || !this.ast.modifiers.length) {
+            this.modifiers = {}
+        } else {
+
+            this.modifiers = this.ast.modifiers.reduce((a, v) => ({ ...a, [v.name]: v }), {})
+        }
     }
 
     getSource() {
-        return this.contract.sourceUnit.content.split("\n").slice(this.ast.loc.start.line-1, this.ast.loc.end.line).join("\n");
+        return this.contract.sourceUnit.content.split("\n").slice(this.ast.loc.start.line - 1, this.ast.loc.end.line).join("\n");
     }
 
-    callsTo(funcName){
-        return !!this.getFunctionCalls(funcName, {findOne: true}).length;
+    callsTo(funcName) {
+        return !!this.getFunctionCalls(funcName, { findOne: true }).length;
     }
 
     getFunctionCalls(funcName, opts) {
         let found = [];
-        parser.visit(this.ast,{
-            FunctionCall(node) {
-                if(node.expression.name === funcName) {
-                    found.push(node);
-                    if(opts.findOne) return found;
+        opts = opts || {};
+        try {
+
+            parser.visit(this.ast, {
+                FunctionCall(node) {
+                    switch (node.expression.type) {
+                        case "MemberAccess":
+                            if (node.expression.memberName === funcName) {
+                                found.push(node);
+                            }
+                            break;
+                        case "Identifier":
+                            if (node.expression.name === funcName) {
+                                found.push(node);
+                            }
+                            break;
+                        case "TypeNameExpression":
+                            if (node.expression.typeName === funcName) {
+                                found.push(node);
+                            }
+                    }
+                    if (opts.findOne && found.length) {
+                        throw new FindOneExit()
+                    }
+
                 }
+            });
+
+        } catch (e) {
+            if (e instanceof FindOneExit) {
+                return found;
             }
-        });
+            throw e;
+        }
+
+
         return found;
     }
 

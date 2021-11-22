@@ -82,7 +82,7 @@ Extract all Contract names? 👉
 Match against something in the `AST`? 👉
 
 ```javascript
-⇒  solgrep <folder> --find="function.ast.modifiers.includes('nonReentrant')"
+⇒  solgrep <folder> --find="Object.keys(function.modifiers).includes('nonReentrant')"
 ```
 
 Lexial match a functions source code?  👉

@@ -129,7 +129,7 @@ function main(){
             progressBar.increment(1, {findings:sgrep.totalFindings, errors:sgrep.errors.length});
         },
         onFileError: (file, err) => {
-            console.error(`\n [🔥] ${file}: ${err.message}`)
+            console.error(`\n [🔥] ${file}: ${err}`)
         },
         onDirAnalyzed: (targetDir) => {
             progressBar.stop();
