@@ -4,7 +4,7 @@
 </sup><br/><br/>
 
 
-## SolGrep - A scriptable semantic grep for solidity
+## 🧠 SolGrep - A scriptable semantic grep for solidity
 
 So you have a set of smart contracts and want to find all contracts that have a `public` method named `withdrawEth` but lexical grep yields a lot of false-positives? Here's where [solgrep](https://github.com/tintinweb/solgrep) can help! 🙌
 
