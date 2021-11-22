@@ -8,7 +8,7 @@
 
 So you have a set of smart contracts and want to find all contracts that have a `public` method named `withdrawEth` but lexical grep yields a lot of false-positives? Here's where [solgrep](https://github.com/tintinweb/solgrep) can help! 🙌
 
-[💾](https://www.npmjs.com/package/solgrep) `npm install solgrep` 
+[💾](https://www.npmjs.com/package/solgrep) `npm install -g solgrep` 
 
 Solgrep recursively finds smart contracts in a target directory, parses the source units to understand the language semantics, and makes this information available to a powerful javascript-based filter function. This way, you can:
 
