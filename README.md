@@ -64,7 +64,7 @@ Extract all Contract names? 👉
 Match against something in the `AST`? 👉
 
 ```javascript
-⇒  solgrep <folder> --find="contract.ast...."
+⇒  solgrep <folder> --find="function.ast.modifiers.includes('nonReentrant')"
 ```
 
 Lexial match a functions source code?  👉
