@@ -100,14 +100,13 @@ Special contract functions can be references as:
 *  `function.name == '__constructor__'`
 
 
-
-
-
 ### Built-In Rules
 
 * `Stats` - collects stats about how many files, contracts, unique names, etc. were processed
 * `GenericGrep` - is the engine behind the `--find` feature
 * ...
+
+**SHARING IS CARING** - [submit your rules!](https://github.com/tintinweb/solgrep/pulls)
 
 ## Demo
 
