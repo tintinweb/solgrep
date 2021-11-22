@@ -29,26 +29,51 @@ Probably the most common way to use this tool is to run it with the `--find=<js-
 You want to find all source-units with a contract that has a function named `withdrawEth`? 👉 
 
 ```javascript
-⇒  solgrep smart-contract-sanctuary/contracts_arbiscan/mainnet/ --find="function.name=='withdrawEth'" 
+⇒  solgrep  <folder> --find="function.name=='withdrawEth'" 
 ```
 
 Do the same thing but case-insensitive? 👉 
 
 ```javascript
-⇒  solgrep smart-contract-sanctuary/contracts_arbiscan/mainnet/ --find="function.name.toLowerCase()=='withdraweth'" 
+⇒  solgrep <folder> --find="function.name.toLowerCase()=='withdraweth'" 
 ```
 
 Exctract all function names from all contracts? 👉 
 
 ```javascript
-⇒  solgrep smart-contract-sanctuary/contracts_arbiscan/mainnet/ --find="function.name" 
+⇒  solgrep <folder> --find="function.name" 
 ```
 
 Get a list of all `external` functions? 👉 
 
 ```javascript
-⇒  solgrep smart-contract-sanctuary/contracts_arbiscan/mainnet/ --find="function.visibility.includes('external')"  
+⇒  solgrep <folder> --find="function.visibility.includes('external')"  
 ```
+
+Find `ERC777` contracts? 👉
+
+```javascript
+⇒  solgrep <folder> --find="contract.name=='ERC777'" 
+```
+
+Extract all Contract names? 👉
+
+```javascript
+⇒  solgrep <folder> --find="contract.name"
+```
+
+Match against something in the `AST`? 👉
+
+```javascript
+⇒  solgrep <folder> --find="contract.ast...."
+```
+
+Lexial match a functions source code?  👉
+
+```javascript
+⇒  solgrep <folder> --find="function.getSource().includes('hi')"
+```
+
 
 Use option `--output=<output.json>` to write all results to a file.
 
