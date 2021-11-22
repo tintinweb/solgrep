@@ -75,7 +75,7 @@ class SolGrep {
             const files = utils.getAllDirFiles(targetDir, (f) => f.endsWith('.sol'));  //sync:
             const numFiles = files.length;
             console.log(this)
-            this.notify("onAnalyzeDir", targetDir, numFiles);
+            this.notify("onAnalyzeDir", targetDir, numFiles, this);
             
             /* block until all files finished */
             Promise.all(files.map((file) => this.analyzeFile(file)));
@@ -93,7 +93,7 @@ class SolGrep {
             const files = utils.getAllDirFiles(targetDir, (f) => f.endsWith('.sol'));  //sync:
             const numFiles = files.length;
 
-            this.notify("onAnalyzeDir", targetDir, numFiles);
+            this.notify("onAnalyzeDir", targetDir, numFiles, this);
 
             const q = fastq(this, worker);
             q.drain = () => {

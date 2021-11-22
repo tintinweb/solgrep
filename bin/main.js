@@ -122,8 +122,8 @@ function main(){
     }, cliProgress.Presets.shades_classic);
 
     var callbacks = {
-        onAnalyzeDir: (targetDir, numFiles) => {
-            progressBar.start(numFiles, 0, {dir:relPath(targetDir), findings:0, errors:0});
+        onAnalyzeDir: (targetDir, numFiles, sgrep) => {
+            progressBar.start(numFiles, 0, {dir:relPath(targetDir), findings:sgrep.totalFiles, errors:sgrep.errors.length});
         },
         onAnalyzeFile: (file, sgrep) => {
             progressBar.increment(1, {findings:sgrep.totalFindings, errors:sgrep.errors.length});
