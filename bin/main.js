@@ -6,15 +6,15 @@
  * */
 
 const cliProgress = require('cli-progress');
-const {SolGrep} = require('../src/');
-const ruleset = require('../src/rules');
 const chalk = require('chalk');
+const {SolGrep, rules} = require('../src/');
+
 
 const argv = require('yargs') // eslint-disable-line
     .usage('Usage: $0 [options] <folder|...>')
     .nargs([], 1)
     .option('r', {
-        alias: 'rules',
+        alias: 'rule',
         default: [],
         type: 'string',
         describe: 'Enable rules',
@@ -39,15 +39,15 @@ const argv = require('yargs') // eslint-disable-line
         type: 'string',
         describe: 'Write "results" as JSON to output file path.',
     })
-    .demandCommand(1)
+    .demandCommand(0)
     .help()
         .alias('h', 'help')
     .version()
         .alias('v', 'version')
     .argv;
 
-var rules = [];
-const banner = `🧠 ${chalk.bold("SolGrep")} v${require('../package.json').version} starting ...
+var selectedRules = [];
+const banner = `🧠 ${chalk.bold("SolGrep")} v${require('../package.json').version} ready!
 `;
 const byebyeBanner = `
 
@@ -62,67 +62,107 @@ function exitProcess(status) {
     process.exit(status);
 }
 
+function relPath(path){
+    return require('path').relative(process.cwd(),path);
+}
+
 /* ---------------  */
-console.log(banner)
 
-if(argv.listRules){
-    console.log("   Built-in Rules")
-    console.log("   ──────────────")
-    Object.keys(ruleset).forEach(ruleName => {
-        console.log(`   📝 ${ruleName}`)
-    })
-    exitProcess(0);
-}
+async function analyzeDir(sgrep, path){
 
-if(argv.find.length){
-    rules.push(new ruleset.GenericGrep(undefined, argv.find));
-}
-argv.rules.forEach(r => {
-    let tmpRule = ruleset[r];
-    if(tmpRule){
-        rules.push(tmpRule);
-    } else {
-        console.error(` [🔥] Invalid ruleset: ${argv.ruleset}`)
-        process.exit(1)
-    }
-});
-
-
-
-for(let path of argv._){
-    console.log(`\n  📁 ${path}`)
-
-    const bar1 = new cliProgress.SingleBar({}, cliProgress.Presets.shades_classic);
-
+    const progressBar = new cliProgress.SingleBar({}, cliProgress.Presets.shades_classic);
     const callbacks = {
-        onStart: (numFiles) => {
-            bar1.start(numFiles, 0);
+        onAnalyzeDir: (numFiles) => {
+            progressBar.start(numFiles, 0);
         },
-        onFile: () => {
-            bar1.increment();
+        onAnalyzeFile: (sgrep) => {
+            progressBar.increment(1, `Hits: ${sgrep.findings.length}, Errors: ${sgrep.errors.length}`);
         },
         onFileError: (file, err) => {
             console.error(`\n [🔥] ${file}: ${err.message}`)
         }
     }
 
+    var sgrep = new SolGrep('::memory::', selectedRules, callbacks);
 
-    let vdb = new SolGrep('::memory::', rules, callbacks);
-    vdb.analyzeDir(path).then(() => {
-        console.log("   ──────────────────────────── Results")
-        console.log(vdb.results)
-        console.log("   ────────────────────────────")
+    console.log(`\n  📁 ${path}`)
 
-        if(argv.output){
-            require('fs').writeFileSync(argv.output, JSON.stringify(vdb.results, null, 2));
-        }
-
-        vdb.close();
-        console.log("   ────────────────────────────")
-        bar1.stop();
-        exitProcess(vdb.results.length);
-    })
-
-    
+    return sgrep.analyzeDirQueue(path);
 }
 
+function main(){
+    console.log(banner)
+
+    if(argv.listRules){
+        console.log("   Built-in Rules")
+        console.log("   ──────────────")
+        Object.keys(rules).forEach(ruleName => {
+            console.log(`   📝 ${ruleName.padEnd(30)}➝   ${rules[ruleName].description}`)
+        })
+        exitProcess(0);
+    }
+
+    if(argv.find.length){
+        selectedRules.push(new rules.GenericGrep(undefined, argv.find));
+    }
+
+    argv.rule.forEach(r => {
+        let tmpRule = rules[r];
+        if(tmpRule){
+            selectedRules.push(new tmpRule(undefined));
+        } else {
+            console.error(` [🔥] Invalid ruleset: ${r}`)
+            process.exit(1)
+        }
+    });
+
+    /* ProgressBar */
+    const progressBar =  new cliProgress.SingleBar({
+        format: '[{bar}] {percentage}% | 🕙 ETA: {eta}s | {value}/{total} | 🌲 {findings} | 🔥 {errors} | 🗂️  {dir}',
+    }, cliProgress.Presets.shades_classic);
+
+    var callbacks = {
+        onAnalyzeDir: (targetDir, numFiles) => {
+            progressBar.start(numFiles, 0, {dir:relPath(targetDir), findings:0, errors:0});
+        },
+        onAnalyzeFile: (file, sgrep) => {
+            progressBar.increment(1, {findings:sgrep.totalFindings, errors:sgrep.errors.length});
+        },
+        onFileError: (file, err) => {
+            console.error(`\n [🔥] ${file}: ${err.message}`)
+        },
+        onDirAnalyzed: (targetDir) => {
+            progressBar.stop();
+        }
+    }
+
+    const sgrep = new SolGrep('::memory::', selectedRules, callbacks);
+    let promises = [];
+
+    for(let dir of argv._){
+        promises.push(sgrep.analyzeDirQueue(dir))
+    }
+
+    //Promise.all(argv._.map(p => sgrep.analyzeDirQueue(p),this)).then(() => {
+    Promise.all(promises).then(() => {  
+        //multibar.stop()
+    
+        if(Object.keys(sgrep.findings).length) {
+            console.log("")
+            console.log("   ────────────────────────────")
+            console.log(sgrep.findings)
+            console.log("   ────────────────────────────")
+        }
+        if(argv.output){
+            require('fs').writeFileSync(argv.output, JSON.stringify(sgrep.findings, null, 2));
+        }
+
+        sgrep.close();
+        console.log("   ────────────────────────────")
+
+        exitProcess(sgrep.findings.length);
+    })
+}
+
+/* ---------------  */
+main();

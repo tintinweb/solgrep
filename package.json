@@ -26,6 +26,7 @@
     "@solidity-parser/parser": "^0.14.0",
     "chalk": "^4.1.2",
     "cli-progress": "^3.9.1",
+    "fastq": "^1.13.0",
     "safe-eval": "^0.4.1",
     "yargs": "^17.2.1"
   }

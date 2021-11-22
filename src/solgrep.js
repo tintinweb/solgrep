@@ -8,64 +8,113 @@
 const utils = require('./utils');
 const {SourceUnit} = require('./solidity');
 const ruleset = require('./rules');
+const fastq = require('fastq');
 
 
 class SolGrep {
     constructor(solgrep_path, rules, callbacks) {
         this.solgrep_path = solgrep_path
-        this.results = {};
+        this.findings = {};
         // override rule ref to solgrep for external rules
         if (rules.length){
             this.rules = rules.map(r => {r.solgrep = this; return r});
             
         } else {
             this.rules = [
-                new ruleset.IsInitializable(this),
-                new ruleset.IsMultipleBalanceOfSameFunc(this),
                 new ruleset.Stats(this)
             ]
         }
         
         this.errors = []
+        this.totalFindings = 0
         this.totalFiles = 0
 
         this.callbacks = callbacks || {};
     }
 
-    close(){
-        this.callbacks.onClose && this.callbacks.onClose(this.rules);
-        this.rules.forEach(rule => rule.onExit && rule.onExit());
+    notify(name, ...args){
+        this.callbacks.hasOwnProperty(name) && this.callbacks[name](...args);
     }
 
-    report(sourceUnit, rule, tag, info){
-        this.callbacks.onReport && this.callbacks.onReport(sourceUnit, rule, tag, info);
-        let key = sourceUnit ? sourceUnit.filePath : "__general__"
-        let result = this.results[key] === undefined ? this.results[key] = [] : this.results[key];
-        result.push({rule:rule.constructor.name, tag:tag, info:info})
-    }
-
-    async analyzeFile(file){
-        this.callbacks.onFile && this.callbacks.onFile(file);
-        try {
-            this.totalFiles += 1;
-            const su = new SourceUnit().fromFile(file);
-
-            this.rules.forEach(rule => rule.check(su))
-            this.callbacks.onFileOk && this.callbacks.onFileOk(file);
-        } catch(e){
-            this.errors.push([file, e])
-            this.callbacks.onFileError && this.callbacks.onFileError(file, e);
+    notifyRules(name, ...args){
+        for(let rule of this.rules){
+            if(!(name in rule)) continue;
+            rule[name](...args);
         }
     }
 
-    analyzeDir(targetDir) {
-        const files = utils.getAllDirFiles(targetDir, (f) => f.endsWith('.sol'));
-        const numFiles = files.length;
-        this.callbacks.onStart && this.callbacks.onStart(numFiles);
-        let ret = Promise.all(files.map(async (file) => this.analyzeFile(file)));
-        this.callbacks.onEnd && this.callbacks.onEnd();
-        this.rules.forEach(rule => rule.onEnd && rule.onEnd());
-        return ret;
+    close(){
+        this.notify("onClose", this.rules)
+        this.notifyRules("onClose")
+    }
+
+    report(sourceUnit, rule, tag, info){
+        this.notify("onReport", sourceUnit, rule, tag, info);
+        let key = sourceUnit ? sourceUnit.filePath : "__general__"
+        let result = this.findings[key] === undefined ? this.findings[key] = [] : this.findings[key];
+        result.push({rule:rule.constructor.name, tag:tag, info:info})
+        this.totalFindings += 1;
+    }
+
+    async analyzeFile(file){
+        this.notify("onAnalyzeFile", file, this);
+        try {
+            this.totalFiles += 1;
+            const su = new SourceUnit().fromFile(file);
+            await this.notifyRules("onProcess", su); /* process rules! */
+
+            this.notify("onFileProcessed", file);
+        } catch(e){
+            this.errors.push([file, e])
+            this.notify("onFileError", file, e);
+        }
+    }
+
+    analyzeDir(targetDir){
+        return new Promise((resolve, reject) => {
+            const files = utils.getAllDirFiles(targetDir, (f) => f.endsWith('.sol'));  //sync:
+            const numFiles = files.length;
+            console.log(this)
+            this.notify("onAnalyzeDir", targetDir, numFiles);
+            
+            /* block until all files finished */
+            Promise.all(files.map((file) => this.analyzeFile(file)));
+
+            this.notify("onDirAnalyzed", targetDir);
+            this.notifyRules("onDirAnalyzed")
+            resolve(this.findings);
+        })
+    }
+
+    async analyzeDirQueue(targetDir) {
+
+        return new Promise((resolve, reject) => {
+
+            const files = utils.getAllDirFiles(targetDir, (f) => f.endsWith('.sol'));  //sync:
+            const numFiles = files.length;
+
+            this.notify("onAnalyzeDir", targetDir, numFiles);
+
+            const q = fastq(this, worker);
+            q.drain = () => {
+                this.notify("onDirAnalyzed", targetDir);
+                this.notifyRules("onDirAnalyzed")
+                resolve(this.findings);
+            };
+
+            async function worker (arg, done) {
+                let ret = await this.analyzeFile(arg)
+                done && done(null, ret)
+                return ret;
+            }
+            
+            // optimized: fast-push "analyzeFile(file)" tasks
+            var i = 0, len = files.length;
+            while (i < len) {
+                q.push(files[i++]);
+            }
+
+        }); 
     }
 }
 

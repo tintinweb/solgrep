@@ -11,6 +11,7 @@
             "skipFiles": [
                 "<node_internals>/**"
             ],
+            "args": ["../../solidity/smart-contract-sanctuary/contracts_arbiscan/mainnet/d1","../../solidity/smart-contract-sanctuary/contracts_arbiscan/mainnet/d1", "--find='contract.name'"],
             "program": "${workspaceFolder}/bin/main.js"
         }
     ]
