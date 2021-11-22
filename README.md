@@ -25,10 +25,22 @@ Probably the most common way to use this tool is to run it with the `--find=<js-
 
 ### Examples
 
+Run the default rules and display some stats?
+
+```javascript
+⇒  solgrep <folder> 
+```
+
+Run a specific or multiple built-in rules (`solgrep -l` to list available rules)? 👉
+
+```javascript
+⇒  solgrep <folder> --rule=IsInitializable --rule=Stats
+```
+
 You want to find all source-units with a contract that has a function named `withdrawEth`? 👉 
 
 ```javascript
-⇒  solgrep  <folder> --find="function.name=='withdrawEth'" 
+⇒  solgrep <folder> --find="function.name=='withdrawEth'" 
 ```
 
 Do the same thing but case-insensitive? 👉 
@@ -107,6 +119,42 @@ Special contract functions can be references as:
 * ...
 
 **SHARING IS CARING** - [submit your rules!](https://github.com/tintinweb/solgrep/pulls)
+
+
+## Usage
+
+```javascript
+
+⇒  solgrep --help
+Usage: solgrep [options] <folder|...>
+
+Options:
+  -r, --rule        Enable rules                           [array] [default: []]
+  -l, --list-rules  List available rules              [boolean] [default: false]
+  -f, --find        Find/Extract information using custom pattern
+                                                           [array] [default: []]
+  -o, --output      Write "results" as JSON to output file path.        [string]
+  -h, --help        Show help                                          [boolean]
+  -v, --version     Show version number                                [boolean]
+
+  ```
+
+
+## Library 
+
+```javascript
+const solgrep = require('solgrep');
+
+let sg = new SolGrep('::memory::', rules, callbacks);
+sg.analyzeDir("/path/to/smart/contracts").then(() => {
+    console.log("   ──────────────────────────── Results")
+    console.log(sg.results)
+    console.log("   ────────────────────────────")
+    sgrep.close();
+})
+
+
+```
 
 ## Demo
 
@@ -298,37 +346,4 @@ cheers 🙌
 ```
 
 
-### Usage
 
-```javascript
-
-⇒  solgrep --help
-Usage: solgrep [options] <folder|...>
-
-Options:
-  -r, --rule        Enable rules                           [array] [default: []]
-  -l, --list-rules  List available rules              [boolean] [default: false]
-  -f, --find        Find/Extract information using custom pattern
-                                                           [array] [default: []]
-  -o, --output      Write "results" as JSON to output file path.        [string]
-  -h, --help        Show help                                          [boolean]
-  -v, --version     Show version number                                [boolean]
-
-  ```
-
-
-## Library 
-
-```javascript
-const solgrep = require('solgrep');
-
-let sg = new SolGrep('::memory::', rules, callbacks);
-sg.analyzeDir("/path/to/smart/contracts").then(() => {
-    console.log("   ──────────────────────────── Results")
-    console.log(sg.results)
-    console.log("   ────────────────────────────")
-    sgrep.close();
-})
-
-
-```
