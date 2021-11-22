@@ -19,8 +19,7 @@ Solgrep recursively finds smart contracts in a target directory, parses the sour
 
 Probably the most common way to use this tool is to run it with the `--find=<js-filter-statement>` option, where `js-filter-statement` is a javascript one-liner that tells the engine what you are interested in. You either provide a statement that returns `boolean` ("find mode") or return information you want to extract ("extract mode").
 
-![solgrep](https://user-images.githubusercontent.com/2865694/142671551-dc3dae4d-1d37-4d8d-8b35-b88660591db4.gif)
-
+![solgrep2](https://user-images.githubusercontent.com/2865694/142903238-af9d2d11-81bb-430c-96dc-4118da89c90b.gif)
 
 ⚠️ Make sure to only allow trusted inputs to `--find=<js-filter-statement>` as this argument is being evaluated as javascript!
 
