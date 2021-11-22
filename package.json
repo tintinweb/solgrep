@@ -19,7 +19,8 @@
   },
   "keywords": [
     "solidity",
-    "grep"
+    "grep",
+    "semantic"
   ],
   "license": "MIT",
   "dependencies": {

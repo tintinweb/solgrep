@@ -22,6 +22,8 @@ Probably the most common way to use this tool is to run it with the `--find=<js-
 ![solgrep](https://user-images.githubusercontent.com/2865694/142671551-dc3dae4d-1d37-4d8d-8b35-b88660591db4.gif)
 
 
+⚠️⚠️⚠️ Make sure to only allow trusted inputs to `--find=<js-filter-statement>` as this argument is being evaluated as javascript!
+
 ### Examples
 
 You want to find all source-units with a contract that has a function named `withdrawEth`? 👉 
