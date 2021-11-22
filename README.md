@@ -88,7 +88,7 @@ The following methods are available:
 
 * `<sourceUnit|contract|function>.getSource()` - provides access to the units source code
 * `<sourceUnit|contract|function>.ast` - provides direct access to the [solidity-parser](https://github.com/solidity-parser/parser) AST
-* There's even more information available. Go check out the Solidity SourceUnit/Contract/Function [Wrapper Classes](https://github.com/tintinweb/solgrep/blob/master/src/solidity.js#L18) functionality (attribs/functions).
+* There's even more information easily available (functions/events/pragmas/etc.). Go check out the Solidity SourceUnit/Contract/Function [Wrapper Classes](https://github.com/tintinweb/solgrep/blob/master/src/solidity.js#L18) functionality (attribs/functions).
 
 
 #### Special Functions
