@@ -4,7 +4,7 @@
  * */
 
 const utils = require('../utils');
-const safeEval = require('safe-eval');
+const safeEval = require('safe-eval'); // @notice - this is not a safe eval!
 
 class BaseRule {
     constructor(solgrep) {
@@ -59,7 +59,7 @@ class GenericGrep extends BaseRule {
             if (patternType === "sourceUnit") {
                 let ret = safeEval(pat, context);
                 if (ret) { //allows match & extract (fuzzy)
-                    this.solgrep.report(sourceUnit, this, `match-sourceUnit`, `${ret}`);
+                    this.solgrep.report(sourceUnit, this, `match-sourceUnit`, `${ret}`, typeof ret === 'object' && ret.hasOwnKey('loc') ? ret.loc : sourceUnit.ast.loc);
                 }
                 continue; //exit early
             }
@@ -74,7 +74,7 @@ class GenericGrep extends BaseRule {
                 if (patternType === "contract") {
                     let ret = safeEval(pat, context);
                     if (ret) {
-                        this.solgrep.report(sourceUnit, this, `match-contract: ${contract.name}`, `${ret}`);
+                        this.solgrep.report(sourceUnit, this, `match-contract: ${contract.name}`, `${ret}`, typeof ret === 'object' && ret.hasOwnKey('loc') ? ret.loc : contract.ast.loc);
                     }
                     return;
                 }
@@ -89,7 +89,7 @@ class GenericGrep extends BaseRule {
                     if (patternType === "function") {
                         let ret = safeEval(pat, context);
                         if (ret) {
-                            this.solgrep.report(sourceUnit, this, `match-function: ${contract.name}.${_function.name}`, `${ret}`);
+                            this.solgrep.report(sourceUnit, this, `match-function: ${contract.name}.${_function.name}`, `${ret}`, typeof ret === 'object' && ret.hasOwnKey('loc') ? ret.loc : _function.ast.loc);
                         }
                     }
                 });
@@ -116,10 +116,6 @@ class Stats extends BaseRule {
                 total: 0,
                 names: {}
             },
-            abstract: {
-                total: 0,
-                names: {}
-            }
         };
     }
 
@@ -128,6 +124,7 @@ class Stats extends BaseRule {
         Object.values(sourceUnit.contracts).forEach(contract => {
             switch (contract.ast.kind) {
                 case "contract":
+                case "abstract": /* treat as contract. we cannot distinguish it anyway */
                     this.stats.contracts.total += 1;  //num contracts
                     this.stats.contracts.names[contract.name] = this.stats.contracts.names[contract.name] === undefined ? 1 : this.stats.contracts.names[contract.name] + 1; //num contracts with same name
                     break;
@@ -139,10 +136,6 @@ class Stats extends BaseRule {
                     this.stats.libraries.total += 1;  //num contracts
                     this.stats.libraries.names[contract.name] = this.stats.libraries.names[contract.name] === undefined ? 1 : this.stats.libraries.names[contract.name] + 1; //num contracts with same name
                     break;
-                case "abstract":
-                    this.stats.abstract.total += 1;  //num contracts
-                    this.stats.abstract.names[contract.name] = this.stats.abstract.names[contract.name] === undefined ? 1 : this.stats.abstract.names[contract.name] + 1; //num contracts with same name
-                    break;
                 default:
                     throw new Error(`Unknown contract kind: ${contract.ast.kind}`);
             }
@@ -153,7 +146,6 @@ class Stats extends BaseRule {
         this.stats.contracts.names = utils.sortObjByValue(this.stats.contracts.names)
         this.stats.libraries.names = utils.sortObjByValue(this.stats.libraries.names)
         this.stats.interfaces.names = utils.sortObjByValue(this.stats.interfaces.names)
-        this.stats.abstract.names = utils.sortObjByValue(this.stats.abstract.names)
         this.solgrep.report(undefined, this, "STATS", this.stats);
     }
     onClose() {

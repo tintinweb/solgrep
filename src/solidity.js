@@ -209,12 +209,17 @@ class FunctionDef {
         return this.contract.sourceUnit.content.split("\n").slice(this.ast.loc.start.line-1, this.ast.loc.end.line).join("\n");
     }
 
-    hasFunctionCall(funcName) {
+    callsTo(funcName){
+        return !!this.getFunctionCalls(funcName, {findOne: true}).length;
+    }
+
+    getFunctionCalls(funcName, opts) {
         let found = [];
         parser.visit(this.ast,{
             FunctionCall(node) {
                 if(node.expression.name === funcName) {
                     found.push(node);
+                    if(opts.findOne) return found;
                 }
             }
         });

@@ -48,11 +48,11 @@ class SolGrep {
         this.notifyRules("onClose")
     }
 
-    report(sourceUnit, rule, tag, info){
-        this.notify("onReport", sourceUnit, rule, tag, info);
+    report(sourceUnit, rule, tag, info, loc){
+        this.notify("onReport", sourceUnit, rule, tag, info, loc);
         let key = sourceUnit ? sourceUnit.filePath : "__general__"
         let result = this.findings[key] === undefined ? this.findings[key] = [] : this.findings[key];
-        result.push({rule:rule.constructor.name, tag:tag, info:info})
+        result.push({rule:rule.constructor.name, tag:tag, info:info, loc: typeof loc === 'object' ? loc : null})
         this.totalFindings += 1;
     }
 

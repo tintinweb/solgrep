@@ -49,6 +49,12 @@ Do the same thing but case-insensitive? 👉
 ⇒  solgrep <folder> --find="function.name.toLowerCase()=='withdraweth'" 
 ```
 
+Find all functions that call `selfdestruct`?  👉
+
+```javascript
+⇒  solgrep <folder> --find="function.callsTo('selfdestruct')"
+```
+
 Exctract all function names from all contracts? 👉 
 
 ```javascript
@@ -86,6 +92,8 @@ Lexial match a functions source code?  👉
 ```
 
 
+
+
 Use option `--output=<output.json>` to write all results to a file.
 
 ### Built-In Keywords for `--find`
@@ -100,6 +108,7 @@ The following methods are available:
 
 * `<sourceUnit|contract|function>.getSource()` - provides access to the units source code
 * `<sourceUnit|contract|function>.ast` - provides direct access to the [solidity-parser](https://github.com/solidity-parser/parser) AST
+* `function.callsTo('withdrawEth')` - find all functions in all contracts that call a method named `withdrawEth`
 * There's even more information easily available (functions/events/pragmas/etc.). Go check out the Solidity SourceUnit/Contract/Function [Wrapper Classes](https://github.com/tintinweb/solgrep/blob/master/src/solidity.js#L18) functionality (attribs/functions).
 
 
