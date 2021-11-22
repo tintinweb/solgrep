@@ -85,8 +85,8 @@ class SolGrep {
             resolve(this.findings);
         })
     }
-
-    async analyzeDirQueue(targetDir) {
+    
+    analyzeDirQueue(targetDir) {
 
         return new Promise((resolve, reject) => {
 
