@@ -82,8 +82,25 @@ Use option `--output=<output.json>` to write all results to a file.
 * The `contract` object matches the contract the engine is currently processing.
 * The `function` object matches the function the engine is currently processing.
 
-* Special contract functions can be references as: `function.name == '__fallback__'`, `function.name == '__receiveEther__'`, `function.name == '__constructor__'`.
-* The Abstract Syntax Tree (AST) can always be accessed at `<sourceUnit|contract|function>.ast`
+#### Available Methos
+
+The following methods are available:
+
+* `<sourceUnit|contract|function>.getSource()` - provides access to the units source code
+* `<sourceUnit|contract|function>.ast` - provides direct access to the [solidity-parser](https://github.com/solidity-parser/parser) AST
+* There's even more information available. Go check out the Solidity SourceUnit/Contract/Function [Wrapper Classes](https://github.com/tintinweb/solgrep/blob/master/src/solidity.js#L18) functionality (attribs/functions).
+
+
+#### Special Functions
+
+Special contract functions can be references as:
+
+*  `function.name == '__fallback__'`
+*  `function.name == '__receiveEther__'`
+*  `function.name == '__constructor__'`
+
+
+
 
 
 ### Built-In Rules
@@ -290,7 +307,7 @@ cheers 🙌
 Usage: solgrep [options] <folder|...>
 
 Options:
-  -r, --rules       Enable rules                           [array] [default: []]
+  -r, --rule        Enable rules                           [array] [default: []]
   -l, --list-rules  List available rules              [boolean] [default: false]
   -f, --find        Find/Extract information using custom pattern
                                                            [array] [default: []]
