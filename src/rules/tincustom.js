@@ -36,8 +36,6 @@ class IsInitializable extends BaseRule {
 IsInitializable.description = "Checks if a contract is initializable by anyone and not auto-initialized in __constr__";
 
 
-
-
 module.exports = {
     IsInitializable,
     
