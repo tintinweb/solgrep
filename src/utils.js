@@ -42,8 +42,21 @@ function sortObjByValue(o) {
     .reduce((r, [k, v]) => ({ ...r, [k]: v }), {});
 }
 
+function sortObjByArrayLength(o) {
+    return Object.entries(o)
+    .sort(([,a],[,b]) => a.length-b.length)
+    .reduce((r, [k, v]) => ({ ...r, [k]: v }), {});
+}
+
+function filterObjByValue(o, f) {
+    return Object.entries(o)
+    .filter(([,v]) => f(v))
+    .reduce((r, [k, v]) => ({ ...r, [k]: v }), {});
+}
 
 module.exports = {
     getAllDirFiles,
-    sortObjByValue
+    sortObjByValue,
+    sortObjByArrayLength,
+    filterObjByValue
 }

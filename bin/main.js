@@ -74,28 +74,6 @@ function relPath(path){
 
 /* ---------------  */
 
-async function analyzeDir(sgrep, path){
-
-    const progressBar = new cliProgress.SingleBar({}, cliProgress.Presets.shades_classic);
-    const callbacks = {
-        onAnalyzeDir: (numFiles) => {
-            progressBar.start(numFiles, 0);
-        },
-        onAnalyzeFile: (sgrep) => {
-            progressBar.increment(1, `Hits: ${sgrep.findings.length}, Errors: ${sgrep.errors.length}`);
-        },
-        onFileError: (file, err) => {
-            console.error(`\n [🔥] ${file}: ${err.message}`)
-        }
-    }
-
-    var sgrep = new SolGrep('::memory::', selectedModules, callbacks);
-
-    console.log(`\n  📁 ${path}`)
-
-    return sgrep.analyzeDirQueue(path);
-}
-
 function main(){
     console.log(banner)
 

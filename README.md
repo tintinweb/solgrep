@@ -91,8 +91,11 @@ Lexial match a functions source code?  👉
 ⇒  solgrep <folder> --find="function.getSource().includes('hi')"
 ```
 
+Find duplicate contracts? (AST exact and fuzzy matching) 👉
 
-
+```javascript
+⇒  solgrep <folder> --rule DupeFinder
+```
 
 Use option `--output=<output.json>` to write all results to a file.
 
