@@ -4,7 +4,7 @@
 </sup><br/><br/>
 
 
-## 🧠 SolGrep - A scriptable semantic grep for solidity
+## 🧠 SolGrep - A scriptable semantic grep utility for solidity
 
 So you have a set of smart contracts and want to find all contracts that have a `public` method named `withdrawEth` but lexical grep yields a lot of false-positives? Here's where [solgrep](https://github.com/tintinweb/solgrep) can help! 🙌
 
@@ -16,6 +16,7 @@ Solgrep recursively finds smart contracts in a target directory, parses the sour
 * find target contracts based on a custom filter script you define
 * create & run your own or built-in rules (e.g. for CI checks)
 * crunch numbers and generate statistics from a code base
+* find doppelgangers! i.e. duplicate contracts sharing the same code structure (`AST_EXACT` and `AST_FUZZY` matching)
 
 Probably the most common way to use this tool is to run it with the `--find=<js-filter-statement>` option, where `js-filter-statement` is a javascript one-liner that tells the engine what you are interested in. You either provide a statement that returns `boolean` ("find mode") or return information you want to extract ("extract mode").
 
