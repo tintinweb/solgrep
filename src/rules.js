@@ -4,10 +4,10 @@
  * */
 
 const {Stats, GenericGrep} = require('./rules/builtin');
-const {IsInitializable} = require('./rules/tincustom');
+const tincustom = require('./rules/tincustom');
 
 module.exports = {
     Stats,
     GenericGrep,
-    IsInitializable
+    ...tincustom
 }
