@@ -9,9 +9,20 @@ const path = require('path');
 
 
 const getAllDirFiles = function (dirPath, isIncluded, arrayOfFiles) {
-    let files = fs.readdirSync(dirPath)
     isIncluded = isIncluded || function() {return true};
     arrayOfFiles = arrayOfFiles || []
+
+    let files = [];
+    if(fs.lstatSync(dirPath).isFile()){
+        // single file
+        if(isIncluded(dirPath)){
+            arrayOfFiles.push(dirPath);
+        }
+        return arrayOfFiles;
+    } else {
+        files = fs.readdirSync(dirPath);
+    } 
+    
 
     files.forEach(function (file) {
         const f_full = path.join(dirPath, file);
