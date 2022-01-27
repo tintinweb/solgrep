@@ -38,6 +38,8 @@ class GenericGrep extends BaseRule {
     _getPatternType(p) {
         if (p.includes("function.")) {
             return "function"
+        } else if (p.includes("modifier.")) {
+            return "modifier"
         } else if (p.includes("contract.")) {
             return "contract"
         } else if (p.includes("sourceUnit")) {
@@ -49,13 +51,14 @@ class GenericGrep extends BaseRule {
         let context = {
             sourceUnit: sourceUnit,
             contract: undefined,
-            function: undefined
+            function: undefined,
+            modifier: undefined
         }
 
 
         for (let pat of this.patterns) {
 
-            let patternType = this._getPatternType(pat);
+            var patternType = this._getPatternType(pat);
             if (patternType === "sourceUnit") {
                 let ret = safeEval(pat, context);
                 if (ret) { //allows match & extract (fuzzy)
@@ -90,6 +93,19 @@ class GenericGrep extends BaseRule {
                         let ret = safeEval(pat, context);
                         if (ret) {
                             this.solgrep.report(sourceUnit, this, `match-function: ${contract.name}.${_function.name}`, `${ret}`, typeof ret === 'object' && ret.hasOwnKey('loc') ? ret.loc : _function.ast.loc);
+                        }
+                    }
+                });
+
+                Object.values(contract.modifiers).forEach(_modifier => {
+                    // Modifier
+                    //update context
+                    context.modifier = _modifier;
+                    
+                    if (patternType === "modifier") {
+                        let ret = safeEval(pat, context);
+                        if (ret) {
+                            this.solgrep.report(sourceUnit, this, `match-modifier: ${contract.name}.${_modifier.name}`, `${ret}`, typeof ret === 'object' && ret.hasOwnKey('loc') ? ret.loc : _modifier.ast.loc);
                         }
                     }
                 });
