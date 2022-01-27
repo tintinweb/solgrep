@@ -24,6 +24,8 @@ Probably the most common way to use this tool is to run it with the `--find=<js-
 
 ⚠️ Make sure to only allow trusted inputs to `--find=<js-filter-statement>` as this argument is being evaluated as javascript!
 
+⚠️ Check out the proper order for arguments when using `--find`, `--rule`. See [Usage](#usage).
+
 ### Examples
 
 Run the default rules and display some stats?
@@ -139,7 +141,7 @@ Special contract functions can be references as:
 ```javascript
 
 ⇒  solgrep --help
-Usage: solgrep [options] <folder|...>
+Usage: solgrep <folder|...> [options]
 
 Options:
   -r, --rule        Enable rules                           [array] [default: []]
@@ -152,6 +154,19 @@ Options:
 
   ```
 
+⚠️ when using multi-options (`--find`, `--rule`) make sure to use this format:
+
+```
+⇒  solgrep <folder|...> [options]
+```
+
+or
+
+```
+⇒  solgrep [options] -- <folder|...> 
+```
+
+or else additional options might be interpreted as additional `--find` options!
 
 ## Library 
 
