@@ -1,6 +1,11 @@
 # Change Log
 All notable changes will be documented in this file.
 
+## v0.0.7
+- new: support `--find=modifier.name` - #1
+- new: dbl-diff-balance rule - #2
+- update: dupefinder
+
 ## v0.0.6
 - new: DupeFinder module - find exact or similar contracts (exact or fuzzy contract structure (AST) match)
   - The demo prints all duplicates (hiding unique contracts)
