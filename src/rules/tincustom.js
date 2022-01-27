@@ -44,7 +44,7 @@ class IsMultipleBalanceOfSameFunc extends BaseRule{
                 if(Object.keys(f.modifiers).includes("nonReentrant")) return; //ignore nonReentrant
                 const funcbody = f.getSource();
                 if( (funcbody.split('.balanceOf').length -1 >= 2) && funcbody.split('diff').length -1 >= 2){
-                    this.solgrep.report(sourceUnit, this, "DBL_BALANCEOF", `${f.name} - balanceOf() called multiple times within same func`, f.ast.loc);
+                    0 && this.solgrep.report(sourceUnit, this, "DBL_BALANCEOF", `${f.name} - balanceOf() called multiple times within same func`, f.ast.loc);
                 }
             })
         })
