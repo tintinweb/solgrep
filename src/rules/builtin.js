@@ -51,7 +51,7 @@ class GenericGrep extends BaseRule {
         let context = {
             sourceUnit: sourceUnit,
             contract: undefined,
-            function: undefined,
+            _function: undefined,
             modifier: undefined
         }
 
