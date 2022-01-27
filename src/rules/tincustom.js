@@ -36,7 +36,23 @@ class IsInitializable extends BaseRule {
 IsInitializable.description = "Checks if a contract is initializable by anyone and not auto-initialized in __constr__";
 
 
+class IsMultipleBalanceOfSameFunc extends BaseRule{
+    onProcess(sourceUnit){
+        Object.values(sourceUnit.contracts).forEach(contract => {
+            //for every contract in the SU
+            contract.functions.forEach(f => {
+                if(Object.keys(f.modifiers).includes("nonReentrant")) return; //ignore nonReentrant
+                const funcbody = f.getSource();
+                if( (funcbody.split('.balanceOf').length -1 >= 2) && funcbody.split('diff').length -1 >= 2){
+                    this.solgrep.report(sourceUnit, this, "DBL_BALANCEOF", `${f.name} - balanceOf() called multiple times within same func`, f.ast.loc);
+                }
+            })
+        })
+    }
+}
+IsMultipleBalanceOfSameFunc.description = "Checks if a contract has multiple balanceOf() calls within same function";
+
 module.exports = {
     IsInitializable,
-    
+    IsMultipleBalanceOfSameFunc
 }
