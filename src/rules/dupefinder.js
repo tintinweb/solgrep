@@ -35,11 +35,14 @@ class DupeFinder extends BaseRule {
     }
     onClose() {
         var uniqueContracts = {};
+        var totalContracts = {}
         
         this.selectedModes.forEach(mode => {
             if(typeof uniqueContracts[mode] === "undefined"){
                 uniqueContracts[mode] = 0;
+                totalContracts[mode] = 0;
             }
+            totalContracts[mode] += Object.values(this.dupeDb[mode]).reduce((acc,curr) => acc + curr.length, 0); //number of contracts with unique hashes
             uniqueContracts[mode] += Object.values(this.dupeDb[mode]).filter(v => v.length == 1).length; //number of contracts with unique hashes
             this.dupeDb[mode] = utils.filterObjByValue(utils.sortObjByArrayLength(this.dupeDb[mode]), (v) => v.length > 1);
         })
@@ -47,8 +50,11 @@ class DupeFinder extends BaseRule {
         console.log("ℹ️  Duplicate Contracts (Hash => SourceUnits):")
         console.log(this.dupeDb)
         console.log("")
-        console.log("ℹ️  Number of Unique Contracts per matching method:")
-        console.log(uniqueContracts)
+        console.log("ℹ️  Number of duplicate Contracts per matching method:")
+        this.selectedModes.forEach(mode => {
+            console.log(`   → ${mode}: ${(totalContracts[mode]-uniqueContracts[mode])}/${totalContracts[mode]}  (${100*(totalContracts[mode]-uniqueContracts[mode])/totalContracts[mode]} % duplicates)`)
+        })
+        
     }
 }
 DupeFinder.description = "Find Duplicate Contracts! Either 'similar' (AST fuzzy matching) or exact (AST structure) matches.";
