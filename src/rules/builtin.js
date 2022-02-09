@@ -30,7 +30,7 @@ class GenericGrep extends BaseRule {
             if (p.includes("{") || p.includes("}") || p.includes("function ") || p.includes("class ") || p.includes("this.") || p.includes("async") || p.includes("require") || p.includes("\n")) {
                 throw new Error("Invalid pattern: " + p);
             }
-            return p.replaceAll(remapFunction, '_function.')
+            return p.replace(remapFunction, '_function.')
 
         }).filter(p => p.length > 0);
     }
@@ -101,7 +101,7 @@ class GenericGrep extends BaseRule {
                     // Modifier
                     //update context
                     context.modifier = _modifier;
-                    
+
                     if (patternType === "modifier") {
                         let ret = safeEval(pat, context);
                         if (ret) {
