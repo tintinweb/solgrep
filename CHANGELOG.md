@@ -1,6 +1,9 @@
 # Change Log
 All notable changes will be documented in this file.
 
+## v0.0.8
+- fix: fixed support for old JS #7
+
 ## v0.0.7
 - new: support `--find=modifier.name` - #1
 - new: dbl-diff-balance rule - #2
