@@ -17,6 +17,41 @@ class BaseRule {
 }
 BaseRule.description = "N/A";
 
+class Pattern {
+    constructor(p){
+        this.TYPES = ["function", "modifier", "contract", "sourceUnit"];
+        this.pattern = p;
+
+        this.TYPES.forEach(t => {
+            this[t] = p.includes(`${t}.`);
+        }, this)
+
+
+        this.isEmpty = this.TYPES.map((t) => this[t]).every(v => v === false); //static
+        this.onlySourceUnit = this.onlyOne("sourceUnit");
+        this.onlyContract = this.onlyOne("contract");
+
+    }
+
+    onlyOne(name){
+        if(!this.TYPES.includes(name)){
+            throw "illegal type";
+        }
+        const checkOthersUnset = this.TYPES.filter((t) => t !== name).map((t) => this[t]).every( v => v === false);        
+        return checkOthersUnset && this[name]; // name==true; others==false;
+    }
+
+    oneOf(arr){
+        for(let x of arr){
+            if(!this.TYPES.includes(x)){
+                throw "illegal type"
+            }
+            if (this[x]) return true;
+        }
+        return false;
+    }
+}
+
 class GenericGrep extends BaseRule {
     constructor(solgrep, patterns) {
         super(solgrep);
@@ -35,18 +70,6 @@ class GenericGrep extends BaseRule {
         }).filter(p => p.length > 0);
     }
 
-    _getPatternType(p) {
-        if (p.includes("function.")) {
-            return "function"
-        } else if (p.includes("modifier.")) {
-            return "modifier"
-        } else if (p.includes("contract.")) {
-            return "contract"
-        } else if (p.includes("sourceUnit")) {
-            return "sourceUnit"
-        }
-    }
-
     onProcess(sourceUnit) {
         let context = {
             sourceUnit: sourceUnit,
@@ -55,60 +78,58 @@ class GenericGrep extends BaseRule {
             modifier: undefined
         }
 
-
         for (let pat of this.patterns) {
 
-            var patternType = this._getPatternType(pat);
-            if (patternType === "sourceUnit") {
-                let ret = safeEval(pat, context);
+            let pattern = new Pattern(pat);
+            /* no pattern at all */
+            if(pattern.isEmpty) continue; //shortcut: skip invalid pattern
+
+            /* sourceUnit only */
+            if (pattern.onlySourceUnit) {
+                let ret = safeEval(pattern.pattern, context);
                 if (ret) { //allows match & extract (fuzzy)
                     this.solgrep.report(sourceUnit, this, `match-sourceUnit`, `${ret}`, typeof ret === 'object' && ret.hasOwnKey('loc') ? ret.loc : sourceUnit.ast.loc);
                 }
-                continue; //exit early
+                continue; //skip early
             }
 
-            // -- parse pattern --
-            // SourceUnit
+            /* sourceUnit & ... */
             Object.values(sourceUnit.contracts).forEach(contract => {
-
                 // update context
                 context.contract = contract;
-
-                if (patternType === "contract") {
-                    let ret = safeEval(pat, context);
+                /* (1) contract only */
+                if (pattern.onlyContract) { // if only contract in pattern, match it and return
+                    let ret = safeEval(pattern.pattern, context);
                     if (ret) {
                         this.solgrep.report(sourceUnit, this, `match-contract: ${contract.name}`, `${ret}`, typeof ret === 'object' && ret.hasOwnKey('loc') ? ret.loc : contract.ast.loc);
                     }
                     return;
                 }
-
-                // Contract
-                contract.functions.forEach(_function => {
-                    // Function
-
-                    //update context
-                    context._function = _function;
-
-                    if (patternType === "function") {
-                        let ret = safeEval(pat, context);
+                /* (2) contract & function */
+                if(pattern.function){
+                    contract.functions.forEach(_function => {
+                        // Function
+    
+                        //update context
+                        context._function = _function;
+                        let ret = safeEval(pattern.pattern, context);
                         if (ret) {
                             this.solgrep.report(sourceUnit, this, `match-function: ${contract.name}.${_function.name}`, `${ret}`, typeof ret === 'object' && ret.hasOwnKey('loc') ? ret.loc : _function.ast.loc);
                         }
-                    }
-                });
-
-                Object.values(contract.modifiers).forEach(_modifier => {
-                    // Modifier
-                    //update context
-                    context.modifier = _modifier;
-
-                    if (patternType === "modifier") {
-                        let ret = safeEval(pat, context);
+                    });
+                }
+                /* (3) contract & modifier */
+                if(pattern.modifier){
+                    Object.values(contract.modifiers).forEach(_modifier => {
+                        // Modifier
+                        //update context
+                        context.modifier = _modifier;
+                        let ret = safeEval(pattern.pattern, context);
                         if (ret) {
                             this.solgrep.report(sourceUnit, this, `match-modifier: ${contract.name}.${_modifier.name}`, `${ret}`, typeof ret === 'object' && ret.hasOwnKey('loc') ? ret.loc : _modifier.ast.loc);
                         }
-                    }
-                });
+                    });
+                }
             });
         }
     }

@@ -8,6 +8,7 @@
 const cliProgress = require('cli-progress');
 const chalk = require('chalk');
 const {SolGrep, rules} = require('../src/');
+const fs = require('fs');
 
 
 const argv = require('yargs') // eslint-disable-line
@@ -87,7 +88,13 @@ function main(){
     }
 
     if(argv.find.length){
-        selectedModules.push(new rules.GenericGrep(undefined, argv.find));
+        /*  bug: argv parser takes everything after --find as grep pattern instead of potential paths. 
+            fix:  check if pattern is a path and add it to argv instead
+        */
+        let paths = argv.find.filter(a => fs.existsSync(a));
+        argv._.push(...paths);
+
+        selectedModules.push(new rules.GenericGrep(undefined, argv.find.filter(a => !paths.includes(a))));
     }
 
     argv.rule.forEach(r => {
@@ -139,7 +146,6 @@ function main(){
     //Promise.all(argv._.map(p => sgrep.analyzeDirQueue(p),this)).then(() => {
     Promise.all(promises).then(() => {  
         //multibar.stop()
-    
         if(Object.keys(sgrep.findings).length) {
             console.log("")
             console.log("   ────────────────────────────")
@@ -147,7 +153,7 @@ function main(){
             console.log("   ────────────────────────────")
         }
         if(argv.output){
-            require('fs').writeFileSync(argv.output, JSON.stringify(sgrep.findings, null, 2));
+            fs.writeFileSync(argv.output, JSON.stringify(sgrep.findings, null, 2));
         }
 
         sgrep.close();
