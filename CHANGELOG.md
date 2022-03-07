@@ -1,6 +1,11 @@
 # Change Log
 All notable changes will be documented in this file.
 
+## v0.0.9
+- fix: allow `solgrep <path> --find <pattern> <pathN> <pathNN>
+- update: new parser
+- update: reworked parts of the grep pattern selection
+
 ## v0.0.8
 - fix: support for old JS #7
 
