@@ -74,7 +74,7 @@ class SolGrep {
         return new Promise((resolve, reject) => {
             const files = utils.getAllDirFiles(targetDir, (f) => f.endsWith('.sol'));  //sync:
             const numFiles = files.length;
-            console.log(this)
+
             this.notify("onAnalyzeDir", targetDir, numFiles, this);
             
             /* block until all files finished */
@@ -89,17 +89,19 @@ class SolGrep {
     analyzeDirQueue(targetDir) {
 
         return new Promise((resolve, reject) => {
-
             const files = utils.getAllDirFiles(targetDir, (f) => f.endsWith('.sol'));  //sync:
             const numFiles = files.length;
 
             this.notify("onAnalyzeDir", targetDir, numFiles, this);
+            if(numFiles == 0){
+                return resolve([]);
+            }
 
             const q = fastq(this, worker);
             q.drain = () => {
                 this.notify("onDirAnalyzed", targetDir);
                 this.notifyRules("onDirAnalyzed")
-                resolve(this.findings);
+                return resolve(this.findings);
             };
 
             async function worker (arg, done) {

@@ -139,7 +139,6 @@ function main(){
     //Promise.all(argv._.map(p => sgrep.analyzeDirQueue(p),this)).then(() => {
     Promise.all(promises).then(() => {  
         //multibar.stop()
-    
         if(Object.keys(sgrep.findings).length) {
             console.log("")
             console.log("   ────────────────────────────")

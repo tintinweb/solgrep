@@ -82,6 +82,12 @@ Extract all Contract names? 👉
 ⇒  solgrep <folder> --find="contract.name"
 ```
 
+Extract all Interface names? 👉
+
+```javascript
+⇒  solgrep <folder> --find="contract.name && contract.kind=='interface'"
+```
+
 Match against something in the `AST`? 👉
 
 ```javascript
