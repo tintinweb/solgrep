@@ -2,7 +2,7 @@
 All notable changes will be documented in this file.
 
 ## v0.0.9
-- fix: allow `solgrep <path> --find <pattern> <pathN> <pathNN>
+- fix: allow `solgrep <path> --find <pattern> <pathN> <pathNN>`
 - update: new parser
 - update: reworked parts of the grep pattern selection
 
