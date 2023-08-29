@@ -52,8 +52,8 @@ const argv = require('yargs') // eslint-disable-line
   .alias('v', 'version').argv;
 
 var selectedModules = [];
-const banner = `what's up punk? 🤘``;
-const byebyeBanner = `;
+const banner = `what's up punk? 🤘`;
+const byebyeBanner = `👋 byebye`;
 
 function exitProcess(status) {
   console.log(byebyeBanner);
