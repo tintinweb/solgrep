@@ -3,6 +3,7 @@
   "version": "0.0.9",
   "description": "",
   "main": "src/index.js",
+  "types": "src/index.d.ts",
   "bin": {
     "solgrep": "bin/main.js"
   },
