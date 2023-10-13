@@ -1,6 +1,9 @@
 # Change Log
 All notable changes will be documented in this file.
 
+## v0.0.10
+- update: dependencies (solidity parser)
+
 ## v0.0.9
 - fix: allow `solgrep <path> --find <pattern> <pathN> <pathNN>`
 - update: new parser
