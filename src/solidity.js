@@ -21,7 +21,7 @@ const prxAttribForwarder = {
 class SourceUnit {
   constructor() {
     this.filePath = undefined;
-    this.ast = undefined;
+    this.ast = undefined; 
     this.content = undefined;
     this.contracts = {};
     this.pragmas = [];
@@ -142,10 +142,16 @@ class Contract {
         this._processAst(node);
     }
 
+    /**
+     * @returns - the AST of the contract
+     * */
     toJSON() {
         return this.ast;
     }
 
+    /**
+     * @returns {string} - the source code of the contract
+     * */
     getSource() {
         return this.sourceUnit.content.split("\n").slice(this.ast.loc.start.line - 1, this.ast.loc.end.line).join("\n");
     }
@@ -249,14 +255,27 @@ class FunctionDef {
         }
     }
 
+    /**
+     * @returns {string} - the source code of the function
+     * */
     getSource() {
         return this.contract.sourceUnit.content.split("\n").slice(this.ast.loc.start.line - 1, this.ast.loc.end.line).join("\n");
     }
 
+    /**
+     * @param {string} funcName - the name of the function this function may call to
+     * @returns {boolean} - true if the function makes a call to funcName
+     * */
     callsTo(funcName) {
         return !!this.getFunctionCalls(funcName, { findOne: true }).length;
     }
 
+    /**
+     * @param {string} funcName - the name of the function this function may call to
+     * @param {object} opts - options
+     * @param {boolean} opts.findOne - return after first match
+     * @returns {object[]} - array of function calls
+     * */
     getFunctionCalls(funcName, opts) {
         let found = [];
         opts = opts || {};

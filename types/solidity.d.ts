@@ -1,5 +1,5 @@
-import { SourceUnit as ParserSourceUnit } from '@solidity-parser/parser/dist/src/ast-types';
-import { Token } from '@solidity-parser/parser/dist/src/types';
+import { SourceUnit as ParserSourceUnit } from "@solidity-parser/parser/dist/src/ast-types";
+import { Token } from "@solidity-parser/parser/dist/src/types";
 
 export class SourceUnit {
   /**
@@ -47,25 +47,31 @@ export class SourceUnit {
   parseAst(input: string): SourceUnit;
 }
 export class Contract {
-    constructor(sourceUnit: any, node: any);
-    sourceUnit: any;
-    ast: any;
-    name: any;
-    dependencies: any;
-    stateVars: {};
-    enums: {};
-    structs: {};
-    mappings: {};
-    modifiers: {};
-    functions: any[];
-    fallback: any;
-    receiveEther: any;
-    events: any[];
-    inherited_names: {};
-    names: {};
-    usingFor: {};
-    functionCalls: any[];
-    toJSON(): any;
-    getSource(): any;
-    _processAst(node: any): void;
+  constructor(sourceUnit: any, node: any);
+  sourceUnit: any;
+  ast: any;
+  name: any;
+  dependencies: any;
+  stateVars: {};
+  enums: {};
+  structs: {};
+  mappings: {};
+  modifiers: {};
+  functions: any[];
+  fallback: any;
+  receiveEther: any;
+  events: any[];
+  inherited_names: {};
+  names: {};
+  usingFor: {};
+  functionCalls: any[];
+  /**
+   * @returns - the AST of the contract
+   * */
+  toJSON(): object;
+  /**
+   * @returns {string} - the source code of the contract
+   * */
+  getSource(): string;
+  _processAst(node: any): void;
 }

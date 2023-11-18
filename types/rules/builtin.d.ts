@@ -1,5 +1,4 @@
 import { SourceUnit } from "../solidity";
-
 export class BaseRule {
     constructor(solgrep: any);
     solgrep: any;
