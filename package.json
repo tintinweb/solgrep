@@ -1,7 +1,7 @@
 {
-  "name": "solgrep",
+  "name": "@octane-security/solgrep-ts",
   "version": "0.0.10",
-  "description": "",
+  "description": "[<img width=\"200\" alt=\"get in touch with Consensys Diligence\" src=\"https://user-images.githubusercontent.com/2865694/56826101-91dcf380-685b-11e9-937c-af49c2510aa0.png\">](https://diligence.consensys.net)<br/> <sup> [[  🌐  ](https://diligence.consensys.net)  [  📩  ](https://github.com/ConsenSys/vscode-solidity-doppelganger/blob/master/mailto:diligence@consensys.net)  [  🔥  ](https://consensys.github.io/diligence/)] </sup><br/><br/>",
   "main": "src/index.js",
   "bin": {
     "solgrep": "bin/main.js"
@@ -9,10 +9,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": {
-    "name": "tintinweb",
-    "url": "https://github.com/tintinweb/"
-  },
+  "author": "tintinweb (https://github.com/tintinweb/)",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/tintinweb/solgrep.git"
@@ -34,5 +31,9 @@
   },
   "devDependencies": {
     "@types/node": "^20.9.2"
-  }
+  },
+  "bugs": {
+    "url": "https://github.com/tintinweb/solgrep/issues"
+  },
+  "homepage": "https://github.com/tintinweb/solgrep#readme"
 }
