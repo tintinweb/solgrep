@@ -33,6 +33,10 @@ class Pattern {
 
     }
 
+    /**
+     * @param {string} name - name of the type
+     * @returns {boolean} - true if only one of the types is set to true
+     * */
     onlyOne(name){
         if(!this.TYPES.includes(name)){
             throw "illegal type";
@@ -41,6 +45,10 @@ class Pattern {
         return checkOthersUnset && this[name]; // name==true; others==false;
     }
 
+    /**
+     * @param {string[]} arr - array of types
+     * @returns {boolean} - true if one of the types is set to true
+     * */
     oneOf(arr){
         for(let x of arr){
             if(!this.TYPES.includes(x)){
@@ -70,6 +78,9 @@ class GenericGrep extends BaseRule {
         }).filter(p => p.length > 0);
     }
 
+    /**
+     * @param {SourceUnit} sourceUnit - sourceUnit to process
+     * */
     onProcess(sourceUnit) {
         let context = {
             sourceUnit: sourceUnit,

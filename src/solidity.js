@@ -19,70 +19,101 @@ const prxAttribForwarder = {
 }
 
 class SourceUnit {
-    constructor() {
-        this.filePath = undefined;
-        this.ast = undefined;
-        this.content = undefined;
-        this.contracts = {};
-        this.pragmas = [];
-        this.imports = [];
+  constructor() {
+    this.filePath = undefined;
+    this.ast = undefined;
+    this.content = undefined;
+    this.contracts = {};
+    this.pragmas = [];
+    this.imports = [];
+  }
+
+  /**
+   * @returns {string} - the source code of the source unit
+   */
+  getSource() {
+    return this.content;
+  }
+
+  /**
+   * @param {string} fpath - the path to the file
+   * @returns {object} - {filePath, content}
+   * */
+  static getFileContent(fpath) {
+    if (!fs.existsSync(fpath)) {
+      throw Error(`File '${fpath}' does not exist.`);
+    }
+    const filePath = path.resolve(fpath);
+    const content = fs.readFileSync(filePath, "utf-8");
+    return { filePath, content };
+  }
+
+    /**
+     * @returns the AST of the source unit
+     * */
+  toJSON() {
+    return this.ast;
+  }
+
+  /**
+   * @returns {SourceUnit} - a clone of the current SourceUnit
+   * */
+  clone() {
+    return Object.assign(new SourceUnit(this.workspace), this);
+  }
+
+  /**
+   * @param {string} fpath - the path to the file
+   * @returns {SourceUnit} - the source unit
+   */
+  fromFile(fpath) {
+    const { filePath, content } = SourceUnit.getFileContent(fpath); // returns {fpath, content}
+    this.filePath = filePath;
+    this.fromSource(content);
+    return this;
+  }
+
+  /**
+   * @param {string} content
+   * */
+  fromSource(content) {
+    /** parser magic */
+    this.content = content;
+    this.parseAst(content);
+  }
+
+  /**
+   * @param {string} input - the source code
+   * @returns {SourceUnit} - the source unit
+   */
+  parseAst(input) {
+    this.ast = parser.parse(input, { loc: true, tolerant: true });
+
+    if (typeof this.ast === "undefined") {
+      throw new parser.ParserError("Parser failed to parse file.");
     }
 
-    getSource() {
-        return this.content;
-    }
+    /** AST rdy */
 
-    static getFileContent(fpath) {
-        if (!fs.existsSync(fpath)) {
-            throw Error(`File '${fpath}' does not exist.`);
-        }
-        const filePath = path.resolve(fpath);
-        const content = fs.readFileSync(filePath, "utf-8");
-        return { filePath, content };
-    }
+    var this_sourceUnit = this;
 
-    toJSON() {
-        return this.ast;
-    }
-
-    clone() {
-        return Object.assign(new SourceUnit(this.workspace), this);
-    }
-
-    fromFile(fpath) {
-        const { filePath, content } = SourceUnit.getFileContent(fpath);  // returns {fpath, content}
-        this.filePath = filePath;
-        this.fromSource(content);
-        return this;
-    }
-
-    fromSource(content) {
-        /** parser magic */
-        this.content = content;
-        this.parseAst(content);
-    }
-
-    parseAst(input) {
-        this.ast = parser.parse(input, { loc: true, tolerant: true });
-
-        if (typeof this.ast === "undefined") {
-            throw new parser.ParserError("Parser failed to parse file.");
-        }
-
-        /** AST rdy */
-
-        var this_sourceUnit = this;
-
-        parser.visit(this.ast, {
-            PragmaDirective(node) { this_sourceUnit.pragmas.push(node); },
-            ImportDirective(node) { this_sourceUnit.imports.push(node); },
-            ContractDefinition(node) {
-                this_sourceUnit.contracts[node.name] = new Proxy(new Contract(this_sourceUnit, node), prxAttribForwarder);
-            },
-        });
-        /*** also import dependencies? */
-        return this;
-    }
+    parser.visit(this.ast, {
+      PragmaDirective(node) {
+        this_sourceUnit.pragmas.push(node);
+      },
+      ImportDirective(node) {
+        this_sourceUnit.imports.push(node);
+      },
+      ContractDefinition(node) {
+        this_sourceUnit.contracts[node.name] = new Proxy(
+          new Contract(this_sourceUnit, node),
+          prxAttribForwarder
+        );
+      },
+    });
+    /*** also import dependencies? */
+    return this;
+  }
 }
 
 class Contract {
