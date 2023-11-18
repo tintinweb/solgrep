@@ -31,5 +31,8 @@
     "safe-eval": "^0.4.1",
     "solidity-doppelganger": "^0.0.11",
     "yargs": "^17.2.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.9.2"
   }
 }
