@@ -320,5 +320,6 @@ class FunctionDef {
 
 module.exports = {
     SourceUnit,
-    Contract
+    Contract,
+    FunctionDef,
 }

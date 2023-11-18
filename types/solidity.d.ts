@@ -75,3 +75,31 @@ export class Contract {
   getSource(): string;
   _processAst(node: any): void;
 }
+export class FunctionDef {
+  constructor(contract: any, node: any);
+  contract: any;
+  ast: any;
+  name: any;
+  modifiers: any;
+  /**
+   * @returns {string} - the source code of the function
+   * */
+  getSource(): string;
+  /**
+   * @param {string} funcName - the name of the function this function may call to
+   * @returns {boolean} - true if the function makes a call to funcName
+   * */
+  callsTo(funcName: string): boolean;
+  /**
+   * @param {string} funcName - the name of the function this function may call to
+   * @param {object} opts - options
+   * @param {boolean} opts.findOne - return after first match
+   * @returns {object[]} - array of function calls
+   * */
+  getFunctionCalls(
+    funcName: string,
+    opts: {
+      findOne: boolean;
+    }
+  ): object[];
+}
