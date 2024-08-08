@@ -97,7 +97,7 @@ class SolGrep {
                 return resolve([]);
             }
 
-            const q = fastq(this, worker);
+            const q = fastq(this, worker, 1);
             q.drain = () => {
                 this.notify("onDirAnalyzed", targetDir);
                 this.notifyRules("onDirAnalyzed")
